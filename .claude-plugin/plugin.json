@@ -1,0 +1,13 @@
+{
+  "name": "rails-guard",
+  "description": "Stops Claude Code from silently running destructive Rails commands: db:drop, db:reset, rails destroy and data wipes always require your explicit confirmation.",
+  "version": "0.1.0",
+  "author": {
+    "name": "wasdevv",
+    "email": "o.u.f.acrazzy@gmail.com"
+  },
+  "homepage": "https://github.com/wasdevv/rails-guard",
+  "repository": "https://github.com/wasdevv/rails-guard",
+  "license": "MIT",
+  "keywords": ["rails", "safety", "guardrails", "database", "hooks", "ruby"]
+}

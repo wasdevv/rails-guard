@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+# PreToolUse hook entry point. Fail-safe by design: any error means no
+# opinion (exit 0, no stdout) so a bug here can never break a session.
+# Set RAILS_GUARD_DEBUG=/some/file to log payloads and decisions.
+
+require "json"
+require_relative "../lib/rails_guard"
+
+def debug(message)
+  return unless ENV["RAILS_GUARD_DEBUG"]
+
+  File.write(ENV["RAILS_GUARD_DEBUG"], "[#{Time.now}] #{message}\n", mode: "a")
+end
+
+begin
+  input = $stdin.read
+  debug("payload: #{input[0, 2000]}")
+  result = RailsGuard::Runner.call(JSON.parse(input))
+  debug(result ? "ask: #{result.dig("hookSpecificOutput", "permissionDecisionReason")}" : "no opinion")
+  puts JSON.generate(result) if result
+rescue StandardError => e
+  debug("error: #{e.class}: #{e.message}")
+end
+
+exit 0

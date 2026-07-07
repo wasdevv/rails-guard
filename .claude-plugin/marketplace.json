@@ -1,0 +1,13 @@
+{
+  "name": "rails-guard",
+  "owner": {
+    "name": "wasdevv"
+  },
+  "plugins": [
+    {
+      "name": "rails-guard",
+      "source": "./",
+      "description": "The plugin that keeps the agent from dropping your database — destructive Rails commands always ask for confirmation first."
+    }
+  ]
+}
