@@ -1,7 +1,7 @@
 {
   "name": "rails-guard",
-  "description": "Stops Claude Code from silently running destructive Rails commands: db:drop, db:reset, rails destroy and data wipes always require your explicit confirmation.",
-  "version": "0.1.0",
+  "description": "Stops Claude Code from silently running destructive commands: db:drop, db:reset, force-push and worktree deletion are blocked outright; rails destroy and data wipes ask for confirmation.",
+  "version": "0.2.0",
   "author": {
     "name": "wasdevv",
     "email": "o.u.f.acrazzy@gmail.com"
