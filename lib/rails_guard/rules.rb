@@ -4,7 +4,18 @@ require 'yaml'
 
 module RailsGuard
   module Rules
-    RAILS_OR_RAKE = /\b(rails|rake)\b/
+    # `\b` treats a hyphen as a word boundary, so "rails" inside `rails-guard`
+    # answered "yes, this command invokes Rails" — and a PR body describing this
+    # very plugin was denied for naming a rake task in prose. Measured: of six
+    # shapes, five were already judged correctly and only this one was wrong.
+    #
+    # Widened to reject a hyphen or an underscore on either side. Every real
+    # invocation still matches — `rails`, `bin/rails`, `./bin/rails`, `bundle
+    # exec rails`, `rake` — because a path separator is not a word character
+    # and the token itself is still bare. This is the only narrowing here that
+    # cannot turn a deny into a pass for a command that would actually run:
+    # a hyphen-joined `rails` is never the executable.
+    RAILS_OR_RAKE = /(?<![\w-])(rails|rake)(?![\w-])/
     TEST_ENV = /RAILS_ENV=test\b|\bdb:test:|(-e|--environment)[= ]?test\b/
     WIPE = /delete_all|destroy_all|truncate|drop_table/i
     WORKTREE_PATH = %r{(~|/[^/]+)/\.swarm/worktrees/}
