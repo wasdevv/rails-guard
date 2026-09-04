@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "ruby ${CLAUDE_PLUGIN_ROOT}/bin/guard"
+            "command": "ruby --disable=gems ${CLAUDE_PLUGIN_ROOT}/bin/guard"
           }
         ]
       }

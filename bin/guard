@@ -3,8 +3,25 @@
 # opinion (exit 0, no stdout) so a bug here can never break a session.
 # Set RAILS_GUARD_DEBUG=/some/file to log payloads and decisions.
 
-require "json"
-require_relative "../lib/rails_guard"
+# Loaded without RubyGems, which is what the hook is launched with. This is a
+# PreToolUse hook: it runs before every Bash call and the user waits on it.
+# Measured on a normal laptop, `ruby -e ""` costs 45ms and `ruby --disable=gems
+# -e ""` costs 8ms — end to end this hook is 65ms against 21ms, for output
+# checked identical on both the silent path and a matching rule.
+#
+# `json` and `yaml` are default gems, so they resolve from the stdlib load path
+# with RubyGems absent. The rescue is for the install where one of them was
+# replaced by a real gem: RubyGems comes back and the requires are retried. A
+# LoadError out here would take the guard down, and a guard that is down is a
+# guard that approves everything.
+begin
+  require "json"
+  require_relative "../lib/rails_guard"
+rescue LoadError
+  require "rubygems"
+  require "json"
+  require_relative "../lib/rails_guard"
+end
 
 def debug(message)
   return unless ENV["RAILS_GUARD_DEBUG"]
