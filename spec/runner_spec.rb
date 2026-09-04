@@ -95,4 +95,34 @@ RSpec.describe RailsGuard::Runner do
   ensure
     ENV.delete('RAILS_GUARD_DISABLE')
   end
+
+  # ---------------------------------------------------------------------------
+  # A hyphen is not a word boundary you can trust
+  # ---------------------------------------------------------------------------
+
+  # `\\b(rails|rake)\\b` answered "yes, this invokes Rails" for the word inside
+  # `rails-guard`, so prose naming this plugin was denied for mentioning a rake
+  # task. The narrowing is the only one here that cannot turn a deny into a
+  # pass for a command that would actually run: a hyphen-joined `rails` is
+  # never the executable.
+  it 'does not read the word inside rails-guard as a Rails invocation' do
+    result = described_class.call(payload("gh pr create --body 'o rails-guard bloqueou db:drop'"))
+
+    expect(result).to be_nil
+  end
+
+  it 'does not read rails_guard as a Rails invocation either' do
+    expect(described_class.call(payload("echo 'rails_guard viu db:drop'"))).to be_nil
+  end
+
+  # Every shape a real invocation takes still has to be caught, because the two
+  # errors do not cost the same: a false positive is an annoyance and a false
+  # negative is a dropped database.
+  ['bin/rails db:drop', './bin/rails db:drop', 'bundle exec rails db:drop', 'rake db:drop'].each do |command|
+    it "still denies #{command}" do
+      result = described_class.call(payload(command))
+
+      expect(result.dig('hookSpecificOutput', 'permissionDecision')).to eq('deny')
+    end
+  end
 end
